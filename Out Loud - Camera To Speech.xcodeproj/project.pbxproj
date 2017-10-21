@@ -1,0 +1,456 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2D01C98F1F968C2400ECA9AC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D01C98E1F968C2400ECA9AC /* Camera.swift */; };
+		2D060B8E1F937FDA0088BBE6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D060B8D1F937FDA0088BBE6 /* Assets.xcassets */; };
+		2D060B931F94370D0088BBE6 /* VoiceOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D060B921F94370D0088BBE6 /* VoiceOver.swift */; };
+		2D3244E81F92E43200C01BC2 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 2D3244E71F92E43200C01BC2 /* Podfile */; };
+		2D63B7331F8E7F07005AE718 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D63B7321F8E7F07005AE718 /* AppDelegate.swift */; };
+		2D63B7351F8E7F07005AE718 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D63B7341F8E7F07005AE718 /* ViewController.swift */; };
+		2D63B7381F8E7F07005AE718 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2D63B7361F8E7F07005AE718 /* Main.storyboard */; };
+		2D63B73D1F8E7F07005AE718 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2D63B73B1F8E7F07005AE718 /* LaunchScreen.storyboard */; };
+		2DA85FC21F92EACE00C09F2C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DA85FC11F92EACE00C09F2C /* libz.tbd */; };
+		2DA85FC41F92EB2B00C09F2C /* tessdata in Resources */ = {isa = PBXBuildFile; fileRef = 2DA85FC31F92EB2A00C09F2C /* tessdata */; };
+		2DDA3D5E1F98DFC50055B04B /* TesseractOCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3D5D1F98DFC50055B04B /* TesseractOCR.swift */; };
+		2DDA3D601F9917080055B04B /* ImageFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3D5F1F9917080055B04B /* ImageFilter.swift */; };
+		2DF5E82E1F8FE2D200C34220 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF5E82D1F8FE2D200C34220 /* Utilities.swift */; };
+		691EE2162A36C002BFA922D4 /* Pods_Out_Loud___Camera_To_Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1A8489EBF2B3AA85828A3FD /* Pods_Out_Loud___Camera_To_Speech.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2D01C98E1F968C2400ECA9AC /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		2D060B8D1F937FDA0088BBE6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2D060B921F94370D0088BBE6 /* VoiceOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceOver.swift; sourceTree = "<group>"; };
+		2D060B951F9438960088BBE6 /* DareDevil.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = DareDevil.jpg; sourceTree = "<group>"; };
+		2D1C55781F9ACB5300D57B9E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		2D3244E71F92E43200C01BC2 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		2D63B72F1F8E7F06005AE718 /* Out Loud - Camera To Speech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Out Loud - Camera To Speech.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D63B7321F8E7F07005AE718 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		2D63B7341F8E7F07005AE718 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		2D63B7371F8E7F07005AE718 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2D63B73C1F8E7F07005AE718 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		2D63B73E1F8E7F07005AE718 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2DA85FC11F92EACE00C09F2C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		2DA85FC31F92EB2A00C09F2C /* tessdata */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tessdata; sourceTree = "<group>"; };
+		2DDA3D5D1F98DFC50055B04B /* TesseractOCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TesseractOCR.swift; sourceTree = "<group>"; };
+		2DDA3D5F1F9917080055B04B /* ImageFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFilter.swift; sourceTree = "<group>"; };
+		2DF5E82D1F8FE2D200C34220 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		371CB04A33EAE5E9905FF12C /* Pods-Out Loud - Camera To Speech.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Out Loud - Camera To Speech.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech.debug.xcconfig"; sourceTree = "<group>"; };
+		95EBBA4F7C60C7CB3C419074 /* Pods-Out Loud - Camera To Speech.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Out Loud - Camera To Speech.release.xcconfig"; path = "Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech.release.xcconfig"; sourceTree = "<group>"; };
+		B1A8489EBF2B3AA85828A3FD /* Pods_Out_Loud___Camera_To_Speech.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "Pods_Out_Loud___Camera_To_Speech.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2D63B72C1F8E7F06005AE718 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DA85FC21F92EACE00C09F2C /* libz.tbd in Frameworks */,
+				691EE2162A36C002BFA922D4 /* Pods_Out_Loud___Camera_To_Speech.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1105124F9C50718285FA81B0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2DA85FC11F92EACE00C09F2C /* libz.tbd */,
+				B1A8489EBF2B3AA85828A3FD /* Pods_Out_Loud___Camera_To_Speech.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		12764E1140E8E56EE49DDDDB /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				371CB04A33EAE5E9905FF12C /* Pods-Out Loud - Camera To Speech.debug.xcconfig */,
+				95EBBA4F7C60C7CB3C419074 /* Pods-Out Loud - Camera To Speech.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		2D060B941F9438960088BBE6 /* Samples */ = {
+			isa = PBXGroup;
+			children = (
+				2D060B951F9438960088BBE6 /* DareDevil.jpg */,
+			);
+			path = Samples;
+			sourceTree = "<group>";
+		};
+		2D63B7261F8E7F06005AE718 = {
+			isa = PBXGroup;
+			children = (
+				2D1C55781F9ACB5300D57B9E /* README.md */,
+				2D3244E71F92E43200C01BC2 /* Podfile */,
+				2D63B7311F8E7F07005AE718 /* Out Loud - Camera To Speech */,
+				2D63B7301F8E7F06005AE718 /* Products */,
+				12764E1140E8E56EE49DDDDB /* Pods */,
+				1105124F9C50718285FA81B0 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		2D63B7301F8E7F06005AE718 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2D63B72F1F8E7F06005AE718 /* Out Loud - Camera To Speech.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2D63B7311F8E7F07005AE718 /* Out Loud - Camera To Speech */ = {
+			isa = PBXGroup;
+			children = (
+				2DA85FC31F92EB2A00C09F2C /* tessdata */,
+				2D060B941F9438960088BBE6 /* Samples */,
+				2D63B7321F8E7F07005AE718 /* AppDelegate.swift */,
+				2D63B7341F8E7F07005AE718 /* ViewController.swift */,
+				2DDA3D5F1F9917080055B04B /* ImageFilter.swift */,
+				2DDA3D5D1F98DFC50055B04B /* TesseractOCR.swift */,
+				2D01C98E1F968C2400ECA9AC /* Camera.swift */,
+				2D060B921F94370D0088BBE6 /* VoiceOver.swift */,
+				2DF5E82D1F8FE2D200C34220 /* Utilities.swift */,
+				2D63B7361F8E7F07005AE718 /* Main.storyboard */,
+				2D63B73B1F8E7F07005AE718 /* LaunchScreen.storyboard */,
+				2D63B73E1F8E7F07005AE718 /* Info.plist */,
+				2D060B8D1F937FDA0088BBE6 /* Assets.xcassets */,
+			);
+			path = "Out Loud - Camera To Speech";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2D63B72E1F8E7F06005AE718 /* Out Loud - Camera To Speech */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D63B7411F8E7F07005AE718 /* Build configuration list for PBXNativeTarget "Out Loud - Camera To Speech" */;
+			buildPhases = (
+				A7E76F4D9CACB826B961A00D /* [CP] Check Pods Manifest.lock */,
+				2D63B72B1F8E7F06005AE718 /* Sources */,
+				2D63B72C1F8E7F06005AE718 /* Frameworks */,
+				2D63B72D1F8E7F06005AE718 /* Resources */,
+				346BDA68E95C61A15DBF640B /* [CP] Embed Pods Frameworks */,
+				E72CD7AE5DC95F9A061AA7A1 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Out Loud - Camera To Speech";
+			productName = "Out Loud - Camera To Speech";
+			productReference = 2D63B72F1F8E7F06005AE718 /* Out Loud - Camera To Speech.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2D63B7271F8E7F06005AE718 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0900;
+				LastUpgradeCheck = 0900;
+				ORGANIZATIONNAME = "Andre Guerra";
+				TargetAttributes = {
+					2D63B72E1F8E7F06005AE718 = {
+						CreatedOnToolsVersion = 9.0;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2D63B72A1F8E7F06005AE718 /* Build configuration list for PBXProject "Out Loud - Camera To Speech" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2D63B7261F8E7F06005AE718;
+			productRefGroup = 2D63B7301F8E7F06005AE718 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2D63B72E1F8E7F06005AE718 /* Out Loud - Camera To Speech */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2D63B72D1F8E7F06005AE718 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D63B73D1F8E7F07005AE718 /* LaunchScreen.storyboard in Resources */,
+				2DA85FC41F92EB2B00C09F2C /* tessdata in Resources */,
+				2D3244E81F92E43200C01BC2 /* Podfile in Resources */,
+				2D63B7381F8E7F07005AE718 /* Main.storyboard in Resources */,
+				2D060B8E1F937FDA0088BBE6 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		346BDA68E95C61A15DBF640B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/TesseractOCRiOS/TesseractOCR.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TesseractOCR.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A7E76F4D9CACB826B961A00D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Out Loud - Camera To Speech-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E72CD7AE5DC95F9A061AA7A1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D63B72B1F8E7F06005AE718 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D060B931F94370D0088BBE6 /* VoiceOver.swift in Sources */,
+				2DDA3D5E1F98DFC50055B04B /* TesseractOCR.swift in Sources */,
+				2D01C98F1F968C2400ECA9AC /* Camera.swift in Sources */,
+				2DF5E82E1F8FE2D200C34220 /* Utilities.swift in Sources */,
+				2D63B7351F8E7F07005AE718 /* ViewController.swift in Sources */,
+				2D63B7331F8E7F07005AE718 /* AppDelegate.swift in Sources */,
+				2DDA3D601F9917080055B04B /* ImageFilter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2D63B7361F8E7F07005AE718 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2D63B7371F8E7F07005AE718 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		2D63B73B1F8E7F07005AE718 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2D63B73C1F8E7F07005AE718 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2D63B73F1F8E7F07005AE718 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2D63B7401F8E7F07005AE718 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2D63B7421F8E7F07005AE718 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 371CB04A33EAE5E9905FF12C /* Pods-Out Loud - Camera To Speech.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T4D9HNC5AF;
+				INFOPLIST_FILE = "Out Loud - Camera To Speech/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "AG.Out-Loud---Camera-To-Speech";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2D63B7431F8E7F07005AE718 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 95EBBA4F7C60C7CB3C419074 /* Pods-Out Loud - Camera To Speech.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = T4D9HNC5AF;
+				INFOPLIST_FILE = "Out Loud - Camera To Speech/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "AG.Out-Loud---Camera-To-Speech";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D63B72A1F8E7F06005AE718 /* Build configuration list for PBXProject "Out Loud - Camera To Speech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D63B73F1F8E7F07005AE718 /* Debug */,
+				2D63B7401F8E7F07005AE718 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D63B7411F8E7F07005AE718 /* Build configuration list for PBXNativeTarget "Out Loud - Camera To Speech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D63B7421F8E7F07005AE718 /* Debug */,
+				2D63B7431F8E7F07005AE718 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2D63B7271F8E7F06005AE718 /* Project object */;
+}

@@ -1,0 +1,6 @@
+framework module Pods_Out_Loud___Camera_To_Speech {
+  umbrella header "Pods-Out Loud - Camera To Speech-umbrella.h"
+
+  export *
+  module * { export * }
+}
