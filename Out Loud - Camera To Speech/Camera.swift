@@ -155,3 +155,35 @@ class Camera: NSObject, AVCapturePhotoCaptureDelegate {
     }
     
 }
+
+class VideoPreviewView: UIView {
+    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+        return layer as! AVCaptureVideoPreviewLayer
+    }
+    
+    var session: AVCaptureSession? {
+        get {return videoPreviewLayer.session}
+        set {videoPreviewLayer.session = newValue}
+    }
+    
+    override class var layerClass: AnyClass {
+        return AVCaptureVideoPreviewLayer.self
+    }
+    
+    private var orientationMap: [UIDeviceOrientation: AVCaptureVideoOrientation] = [
+        UIDeviceOrientation.portrait : AVCaptureVideoOrientation.portrait,
+        UIDeviceOrientation.portraitUpsideDown : AVCaptureVideoOrientation.portraitUpsideDown,
+        UIDeviceOrientation.landscapeLeft : AVCaptureVideoOrientation.landscapeLeft,
+        UIDeviceOrientation.landscapeRight : AVCaptureVideoOrientation.landscapeRight
+    ]
+    
+    func updateVideoOrientationFromDeviceOrientation(){
+        if let videoPreviewLayerConnection = videoPreviewLayer.connection {
+            let deviceOrientation = UIDevice.current.orientation
+            guard let newVideoOrientation = orientationMap[deviceOrientation], deviceOrientation.isPortrait || deviceOrientation.isLandscape else {return}
+            videoPreviewLayerConnection.videoOrientation = newVideoOrientation
+        }
+    }
+    
+    
+}

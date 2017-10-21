@@ -6,7 +6,7 @@ Out Loud is an app that assists the visually impaired by providing voice over in
 Get audio feedback from the world by simply pointing the camera to it and tapping the screen.
 
 # First Iteration
-As a first iteration of this app it should be able to perform Optical Character Recognition (OCR) on a restaurant menu and read it out loud. Next iterations should implement features such as currency and scene identification.
+On its first version this app it should be able to perform Optical Character Recognition (OCR) on a restaurant menu and read it out loud. Next iterations should implement features such as currency and scene identification.
 
 # Development tools
 - Xcode9
