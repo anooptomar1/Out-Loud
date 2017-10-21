@@ -11,4 +11,4 @@ As a first iteration of this app it should be able to perform Optical Character 
 # Development tools
 - Xcode9
 - Swift4
-- iPhone 7 Plus
+- iPhone 7 Plus running iOS 11
