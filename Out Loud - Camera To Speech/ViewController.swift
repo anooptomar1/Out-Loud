@@ -40,6 +40,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         print("Executing viewDidLoad")
         super.viewDidLoad()
+        self.view.backgroundColor = .black  // chaging the background of my main view to black if there's any real estate left uncovered.
         voiceOver = VoiceOver(viewController: self) // initializes voice over object for this view controller
         camera = Camera(viewController: self) // initializes camera object for this view controller
         
@@ -120,16 +121,17 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         if let image = self.camera.lastPhoto { // if the camera image is available
             // display image on the UI
             self.displayImageOnView(image)
+
+            //Apply filters on image
+            let imageFilter = ImageFilter(viewController: self) // instantiate new filter
+            if let filteredImage = imageFilter.detectTextAreas(image) { // apply filter for text detection
+
+                for item in filteredImage {
+                    print(item)
+                }
+                print("Detected rectangles: ",filteredImage.count)
+            }
             self.goToChilling()
-            // Apply filters on image
-//            let imageFilter = ImageFilter() // instantiate new filter
-//            if let filteredImage = imageFilter.detectTextAreas(image) { // apply filter for text detection
-//
-//                for item in filteredImage {
-//                    print(item)
-//                }
-//                print("Detected rectangles: ",filteredImage.count)
-//            }
 //            self.goToReading("Remove me after your are done debugging.")
             
             
@@ -139,16 +141,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         } else { // no image is available for processing
             self.goToLiveView()
         }
-        
-        
-        
-
-        
-        
-    }
-    
-    func goToChilling(){
-        self.appState = AppState.chilling
     }
   
     func displayImageOnView(_ image: UIImage){
@@ -199,12 +191,17 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         self.goToLiveView()
     }
  
+    func goToChilling(){
+        self.appState = .chilling
+    }
     
     func progressImageRecognition(for tesseract: G8Tesseract!) {
         // updates user regarding current ocr processing
         // if processing has been completed. discover delegate method that does this. this method may not be called after tesseract is done processing
     }
     
-    
+//    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+//        // handles transitioning of device orientation.
+//    }
 }
 
