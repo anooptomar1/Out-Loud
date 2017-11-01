@@ -11,11 +11,14 @@ import AVFoundation
 import TesseractOCR
 
 enum AppState{
-    case loading, liveView, capturing, processing, reading, noText, chilling
+    case loading, liveView, capturing, textDetection, imageFiltering, applyOCR, processing, reading, noText, chilling
     /*
      loading: app is loading for the first time
      liveView: app is presenting the live view from the camera and awaiting a tap to capture image
      capturing: app is capturing image
+     textDetection: Vision framework is processing image for text
+     imageFiltering: text has been detected and captured image will now be filtered to be sent to OCR.
+     applyOCR: images have been filtered and are ready for OCR.
      processing: app has completed capturing and will now run OCR on image for reading
      reading: app is outputing speech of recognized text
      noText: no text found on the image. Go back to liveView
@@ -31,11 +34,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                                                   AppState.processing:"Processing.",
                                                   AppState.noText:"No text found."] // this dictionary contains audio feedback phrases for app state changes.
     var appState = AppState.loading
-    
     var voiceOver: VoiceOver!
     var camera: Camera!
-    
     var capturedCGImage: CGImage! // placeholder for captured image
+    var textDetection: TextDetection!
+    let scaleFactor: CGFloat = UIScreen.main.scale // device dependent scale factor; 3x for the iPhone 7 Plus. Used in the context of CIImages
     
     override func viewDidLoad() {
         print("Executing viewDidLoad")
@@ -67,7 +70,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
                 break;
             case .reading:
                 self.goToCancelReading()
-            case .chilling:
+            case .applyOCR:
                 self.goToLiveView()
             default:
                 print("Tap functions disabled at this time.")
@@ -90,12 +93,10 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         voiceOver.add(stateSpeech[AppState.liveView]!)
         voiceOver.execute()
 
-        // Remove previous UIImageViews from main view before starting live view
+        // Remove previous content from main view before starting live view
         print("Removing previous subviews on top of main view")
         for subview in self.view.subviews{
-            if subview.description.contains("UIImageView"){
-                subview.removeFromSuperview()
-            }
+            subview.removeFromSuperview()
         }
         
         if let camera = self.camera { // unwrap optional camera variable
@@ -109,7 +110,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         self.camera.snapPhoto()
         
     }
-    func goToProcessing(){
+    func goToTextDetection(){
         self.camera.stopLiveView() // cut video feed
         self.appState = .processing
         
@@ -119,52 +120,17 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         voiceOver.execute()
 
         if let image = self.camera.lastPhoto { // if the camera image is available
-            // display image on the UI
-            self.displayImageOnView(image)
+            self.displayImageOnView(image, xPos: 0, yPos: 0) // display image on the UI
 
-            //Apply filters on image
-            let imageFilter = ImageFilter(viewController: self) // instantiate new filter
-            if let filteredImage = imageFilter.detectTextAreas(image) { // apply filter for text detection
-
-                for item in filteredImage {
-                    print(item)
-                }
-                print("Detected rectangles: ",filteredImage.count)
+            // Apply text detection
+            self.textDetection = TextDetection(viewController: self, inputImage: image)
+            if let textDetection = self.textDetection {
+                textDetection.detectTextAreas()
             }
-            self.goToChilling()
-//            self.goToReading("Remove me after your are done debugging.")
-            
-            
-//            let ocr = TesseractOCR(viewController: self) // instantiates OCR class for image processing
-//            ocr.execute(filteredImage) // executes OCR. State change will be provided when recognition is finished.
-            
+            // next state is triggered when text detection has finished.
         } else { // no image is available for processing
             self.goToLiveView()
         }
-    }
-  
-    func displayImageOnView(_ image: UIImage){
-        let conversionRatio = self.view.frame.width / image.size.width
-        let scaledHeigth = conversionRatio * image.size.height
-        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: scaledHeigth))
-        imageView.contentMode = .scaleAspectFit
-        imageView.image = image
-        print(imageView)
-        
-        // Remove previous UIImageViews from main view before starting live view
-        for subview in self.view.subviews{
-            if subview.description.contains("UIImageView"){
-                print("Previous image removed.")
-                subview.removeFromSuperview()
-            }
-        }
-        
-//        for subview in self.view.subviews{
-//            print("Subviews in self.view:")
-//            print(subview.description)
-//        }
-        print("Adding new subview with image.")
-        self.view.addSubview(imageView) // this will be removed from the view when we return to live view mode.
     }
     
     func goToReading(_ string: String){
@@ -190,10 +156,44 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         voiceOver.reset()
         self.goToLiveView()
     }
- 
-    func goToChilling(){
-        self.appState = .chilling
+    
+    func goToApplyOCR(){
+        // just display them images now
+        self.appState = .applyOCR
+        print("Applying OCR on text images.")
+        for image in self.textDetection.textImages{
+            let ocr = TesseractOCR(viewController: self)
+            ocr.execute(image)
+        }
+//        DispatchQueue.main.async {
+//            for image in self.textDetection.textImages{
+//                print(image)
+//                let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 400, height: 50))
+//                imageView.contentMode = .scaleAspectFill
+//                imageView.image = image
+//                self.view.addSubview(imageView)
+//            }
+//        }
     }
+    
+    
+    
+    
+    
+    // OTHER FUNCTIONS
+    func displayImageOnView(_ image: UIImage, xPos: CGFloat, yPos: CGFloat){
+        DispatchQueue.main.async {
+            let conversionRatio = self.view.frame.width / image.size.width
+            let scaledHeigth = conversionRatio * image.size.height
+            let imageView = UIImageView(frame: CGRect(x: xPos, y: yPos, width: self.view.frame.width, height: scaledHeigth))
+            imageView.contentMode = .scaleAspectFit
+            imageView.image = image
+            print(imageView)
+            print("Adding new subview with image.")
+            self.view.addSubview(imageView) // this will be removed from the view when we return to live view mode.
+        }
+    }
+    
     
     func progressImageRecognition(for tesseract: G8Tesseract!) {
         // updates user regarding current ocr processing

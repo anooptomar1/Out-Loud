@@ -18,7 +18,7 @@
 		2DA85FC21F92EACE00C09F2C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DA85FC11F92EACE00C09F2C /* libz.tbd */; };
 		2DA85FC41F92EB2B00C09F2C /* tessdata in Resources */ = {isa = PBXBuildFile; fileRef = 2DA85FC31F92EB2A00C09F2C /* tessdata */; };
 		2DDA3D5E1F98DFC50055B04B /* TesseractOCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3D5D1F98DFC50055B04B /* TesseractOCR.swift */; };
-		2DDA3D601F9917080055B04B /* ImageFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3D5F1F9917080055B04B /* ImageFilter.swift */; };
+		2DDA3D601F9917080055B04B /* TextDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3D5F1F9917080055B04B /* TextDetection.swift */; };
 		2DF5E82E1F8FE2D200C34220 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DF5E82D1F8FE2D200C34220 /* Utilities.swift */; };
 		691EE2162A36C002BFA922D4 /* Pods_Out_Loud___Camera_To_Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1A8489EBF2B3AA85828A3FD /* Pods_Out_Loud___Camera_To_Speech.framework */; };
 /* End PBXBuildFile section */
@@ -39,7 +39,7 @@
 		2DA85FC11F92EACE00C09F2C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		2DA85FC31F92EB2A00C09F2C /* tessdata */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tessdata; sourceTree = "<group>"; };
 		2DDA3D5D1F98DFC50055B04B /* TesseractOCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TesseractOCR.swift; sourceTree = "<group>"; };
-		2DDA3D5F1F9917080055B04B /* ImageFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFilter.swift; sourceTree = "<group>"; };
+		2DDA3D5F1F9917080055B04B /* TextDetection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDetection.swift; sourceTree = "<group>"; };
 		2DF5E82D1F8FE2D200C34220 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		371CB04A33EAE5E9905FF12C /* Pods-Out Loud - Camera To Speech.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Out Loud - Camera To Speech.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech.debug.xcconfig"; sourceTree = "<group>"; };
 		95EBBA4F7C60C7CB3C419074 /* Pods-Out Loud - Camera To Speech.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Out Loud - Camera To Speech.release.xcconfig"; path = "Pods/Target Support Files/Pods-Out Loud - Camera To Speech/Pods-Out Loud - Camera To Speech.release.xcconfig"; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 				2D060B941F9438960088BBE6 /* Samples */,
 				2D63B7321F8E7F07005AE718 /* AppDelegate.swift */,
 				2D63B7341F8E7F07005AE718 /* ViewController.swift */,
-				2DDA3D5F1F9917080055B04B /* ImageFilter.swift */,
+				2DDA3D5F1F9917080055B04B /* TextDetection.swift */,
 				2DDA3D5D1F98DFC50055B04B /* TesseractOCR.swift */,
 				2D01C98E1F968C2400ECA9AC /* Camera.swift */,
 				2D060B921F94370D0088BBE6 /* VoiceOver.swift */,
@@ -262,7 +262,7 @@
 				2DF5E82E1F8FE2D200C34220 /* Utilities.swift in Sources */,
 				2D63B7351F8E7F07005AE718 /* ViewController.swift in Sources */,
 				2D63B7331F8E7F07005AE718 /* AppDelegate.swift in Sources */,
-				2DDA3D601F9917080055B04B /* ImageFilter.swift in Sources */,
+				2DDA3D601F9917080055B04B /* TextDetection.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

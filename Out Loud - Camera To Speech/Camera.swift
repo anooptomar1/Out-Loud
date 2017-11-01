@@ -157,18 +157,18 @@ class Camera: NSObject, AVCapturePhotoCaptureDelegate {
         print("Metadata orientation with key: ",photoMetadata[String(kCGImagePropertyOrientation)] as Any) // Returns corresponting NSCFNumber. It seems to specify the origin of the image
         guard let imageData = photo.fileDataRepresentation() else {
             print("Error while generating image from photo capture data.");
-            self.lastPhoto = nil; self.controller.goToProcessing();
+            self.lastPhoto = nil; self.controller.goToTextDetection();
             return}
         guard let uiImage = UIImage(data: imageData) else {
             print("Unable to generate UIImage from image data.");
-            self.lastPhoto = nil; self.controller.goToProcessing();
+            self.lastPhoto = nil; self.controller.goToTextDetection();
             return}
         guard let cgImage = uiImage.cgImage else {print("Error generating CGImage");self.lastPhoto=nil;return} // generate a corresponding CGImage
         guard let deviceOrientationOnCapture = self.deviceOrientationOnCapture else {print("Error retrieving orientation on capture");self.lastPhoto=nil;return}
         self.lastPhoto = UIImage(cgImage: cgImage, scale: 1.0, orientation: deviceOrientationOnCapture.getUIImageOrientationFromDevice())
         print(self.lastPhoto)
         print("UIImage generated. Orientation: \(self.lastPhoto.imageOrientation.rawValue)")
-        self.controller.goToProcessing()
+        self.controller.goToTextDetection()
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, willBeginCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
