@@ -44,14 +44,17 @@ class VoiceOver: NSObject, AVSpeechSynthesizerDelegate {
     }
     
     func execute(){
-        // utters all strings in the queue
-        for text in self.queue{ // iterates thru texts in the processing queue
-            let utterance = AVSpeechUtterance(string: text) // loads a new utterance to be spoken
-            guard let voice = self.voice else {fatalError("Error loading voice")} // unwrap voice
-            utterance.voice = voice // load voice selection
-            speech.speak(utterance) // say it out loud
+        // verifies if there's a reading in progress. YES: waits for delegate method to signal utterance finished; NO: Executes first element of speech queue (FIFO - First In First Out basis).
+        if !speech.isSpeaking { // if there's no utterance in progress.
+            // execute first element in queue
+            if self.queue.count > 0 { // if there are elements in the queue
+                let speechString = self.queue.removeFirst()
+                let utterance = AVSpeechUtterance(string: speechString) // loads a new utterance to be spoken
+                guard let voice = self.voice else {fatalError("Error loading voice")} // unwrap voice
+                utterance.voice = voice // load voice selection
+                speech.speak(utterance) // say it out loud
+            } else {print("Execution call on empty speech queue.");return}
         }
-        self.queue = [String]() // reset queue when finished.
     }
     
     func reset(){
@@ -59,19 +62,28 @@ class VoiceOver: NSObject, AVSpeechSynthesizerDelegate {
         if speech.isSpeaking { // if there is a speech in progress
             speech.stopSpeaking(at: AVSpeechBoundary.immediate) // stop speech immediately
         }
-        let utterance = AVSpeechUtterance(string: "Reading cancelled.") // loads utterance with corresponding app state voice over
-        guard let voice = self.voice else {fatalError("Error loading voice")} // unwrap voice
-        utterance.voice = voice // load voice selection
-        speech.speak(utterance) // say it out loud
+//        let utterance = AVSpeechUtterance(string: "Reading cancelled.") // loads utterance with corresponding app state voice over
+//        guard let voice = self.voice else {fatalError("Error loading voice")} // unwrap voice
+//        utterance.voice = voice // load voice selection
+//        speech.speak(utterance) // say it out loud
         self.queue = [String]() // reset queue
     }
     
     // delegate method
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        if ((self.queue.count == 0) &&
-            (self.controller.appState == AppState.reading) &&
-            (!self.speech.isSpeaking)) { // if there's nothing more to be said and app was on reading state and there's nothing currently being said
-            self.controller.goToLiveView() // go back to live view
+        if self.queue.count > 0 { // finished uttering sentence and found elements in the queue to read.
+            self.execute() // call utterance routine again
+        } else { // queue is empty
+            // This delegate method is called not only after OCR requests, but also on regular state calls.
+            if self.controller.appState == AppState.reading {
+                guard let ocr = self.controller.ocr else {print("VoiceOver: Error on OCR callback from ViewController.");return}
+                guard let textDetection = self.controller.textDetection else {print("VoiceOver: Error on textDetection callback from ViewController.");return}
+                if ocr.finishedOCRRequests == textDetection.detectedTextAreasCount{ // OCR has already processed all the requests of detected text areas.
+                    self.controller.goToCleanup() // run cleanup routine before starting live view again.
+                } // if OCR is not done processing, its last process will call the execute routine here and program will resume. No deadlock here (hopefully).
+            } // else case: speech has finished for another state call
+            
         }
     }
 }
+

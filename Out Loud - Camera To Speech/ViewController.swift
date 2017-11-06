@@ -11,7 +11,7 @@ import AVFoundation
 import TesseractOCR
 
 enum AppState{
-    case loading, liveView, capturing, textDetection, imageFiltering, applyOCR, processing, reading, noText, chilling
+    case loading, liveView, capturing, textDetection, processing, reading, noText, cancelling, cleanup
     /*
      loading: app is loading for the first time
      liveView: app is presenting the live view from the camera and awaiting a tap to capture image
@@ -32,12 +32,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     private var stateSpeech: [AppState:String] = [AppState.liveView:"Camera view. Tap to begin.",
                                                   AppState.processing:"Processing.",
-                                                  AppState.noText:"No text found."] // this dictionary contains audio feedback phrases for app state changes.
+                                                  AppState.noText:"No text found.",
+                                                  AppState.cancelling:"Cancelled."] // this dictionary contains audio feedback phrases for app state changes.
     var appState = AppState.loading
     var voiceOver: VoiceOver!
     var camera: Camera!
     var capturedCGImage: CGImage! // placeholder for captured image
     var textDetection: TextDetection!
+    var ocr: TesseractOCR!
+    
     let scaleFactor: CGFloat = UIScreen.main.scale // device dependent scale factor; 3x for the iPhone 7 Plus. Used in the context of CIImages
     
     override func viewDidLoad() {
@@ -46,6 +49,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         self.view.backgroundColor = .black  // chaging the background of my main view to black if there's any real estate left uncovered.
         voiceOver = VoiceOver(viewController: self) // initializes voice over object for this view controller
         camera = Camera(viewController: self) // initializes camera object for this view controller
+        ocr = TesseractOCR(viewController: self) // initialize OCR class.
         
         // SETUP CODED GESTURES
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap)) // instantiates a gesture recognizer
@@ -68,10 +72,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             case .liveView:
                 self.goToCapturing()
                 break;
-            case .reading:
-                self.goToCancelReading()
-            case .applyOCR:
-                self.goToLiveView()
+            case .processing, .reading, .textDetection:
+                self.goToCancel()
+                break
             default:
                 print("Tap functions disabled at this time.")
                 break;
@@ -85,24 +88,19 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     // APP STATES
     func goToLiveView(){
-        print("Live view state reached.")
-        self.appState = .liveView // update app state
-        
-        // update user with the state of the app via voice over
-        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-        voiceOver.add(stateSpeech[AppState.liveView]!)
-        voiceOver.execute()
-
-        // Remove previous content from main view before starting live view
-        print("Removing previous subviews on top of main view")
-        for subview in self.view.subviews{
-            subview.removeFromSuperview()
+        DispatchQueue.main.async {
+            self.appState = .liveView // update app state
+            print("Live view state reached.")
+            
+            // update user with the state of the app via voice over
+            guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
+            voiceOver.add(self.stateSpeech[AppState.liveView]!)
+            voiceOver.execute()
+            
+            if let camera = self.camera { // unwrap optional camera variable
+                camera.startLiveView()
+            } else {fatalError("Unable to unwrap camera object.")}
         }
-        
-        if let camera = self.camera { // unwrap optional camera variable
-            camera.startLiveView()
-        } else {fatalError("Unable to unwrap camera object.")}
-        
     }
     func goToCapturing(){
         self.appState = .capturing
@@ -112,7 +110,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     func goToTextDetection(){
         self.camera.stopLiveView() // cut video feed
-        self.appState = .processing
+        self.appState = .textDetection
         
         // update user with the state of the app via voice over
         guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
@@ -129,8 +127,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             }
             // next state is triggered when text detection has finished.
         } else { // no image is available for processing
-            self.goToLiveView()
+            self.goToNoText()
         }
+    }
+    
+    func goToApplyOCR(){
+        // just display them images now
+        print("Applying OCR on text images.")
+        guard let ocr = self.ocr else {print("Error on OCR call.");return}
+        ocr.execute(self.textDetection.textImages)
     }
     
     func goToReading(_ string: String){
@@ -147,34 +152,38 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
         voiceOver.add(stateSpeech[AppState.noText]!)
         voiceOver.execute()
-        self.goToLiveView()
+        self.goToCleanup()
     }
     
-    func goToCancelReading(){
-        print("Cancel reading request received.")
-        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-        voiceOver.reset()
-        self.goToLiveView()
-    }
-    
-    func goToApplyOCR(){
-        // just display them images now
-        self.appState = .applyOCR
-        print("Applying OCR on text images.")
-        for image in self.textDetection.textImages{
-            let ocr = TesseractOCR(viewController: self)
-            ocr.execute(image)
+    func goToCleanup(){
+        // Does the clean up of internal variables to make them ready for any new requests.
+        self.appState = .cleanup
+        print("Cleanup state reached.")
+        if let voiceOver = self.voiceOver {voiceOver.reset()}
+        if let ocr = self.ocr {ocr.reset()}
+        if let textDetection = self.textDetection {textDetection.reset()}
+        
+        // Remove previous content from main view before starting live view
+        DispatchQueue.main.async { // dispatch to main queue as it is UI related.
+            print("Removing previous subviews on top of main view")
+            for subview in self.view.subviews{
+                subview.removeFromSuperview()
+            }
         }
-//        DispatchQueue.main.async {
-//            for image in self.textDetection.textImages{
-//                print(image)
-//                let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 400, height: 50))
-//                imageView.contentMode = .scaleAspectFill
-//                imageView.image = image
-//                self.view.addSubview(imageView)
-//            }
-//        }
+        
+        self.goToLiveView()
     }
+    
+    func goToCancel(){
+        self.appState = .cancelling
+        print("Cancel request received.")
+        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
+        voiceOver.add(stateSpeech[AppState.cancelling]!)
+        voiceOver.execute()
+        self.goToCleanup()
+    }
+
+    
     
     
     
@@ -194,11 +203,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    
-    func progressImageRecognition(for tesseract: G8Tesseract!) {
-        // updates user regarding current ocr processing
-        // if processing has been completed. discover delegate method that does this. this method may not be called after tesseract is done processing
-    }
     
 //    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
 //        // handles transitioning of device orientation.

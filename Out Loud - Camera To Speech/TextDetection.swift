@@ -15,12 +15,20 @@ class TextDetection: NSObject {
     var inputImage: UIImage // an image to be processed for text areas
     var cropAreas = [CGRect]() // a collection of CGRectangles with the areas of the image that need to be cropped.
     var textImages = [UIImage]()// a collection of UIImages containing text
+    var detectedTextAreasCount: Int? // the number of Text areas detected in the image.
     
     init(viewController: ViewController, inputImage: UIImage){
         self.controller = viewController
         self.inputImage = inputImage
         print("Text detection initialized. Input image image orientation: \(inputImage.imageOrientation.rawValue)")
         super.init()
+    }
+    
+    func reset(){
+        // cleanup routine
+        self.cropAreas = []
+        self.textImages = []
+        self.detectedTextAreasCount = 0
     }
     
     func detectTextAreas() {
@@ -35,7 +43,7 @@ class TextDetection: NSObject {
                 print("Detection failed. Error: \(error)")
                 return
             }
-            
+            if let results = req.results {self.detectedTextAreasCount = results.count} // update internal variable with the number of detected areas (relevant info for other pieces of the app)
             
             req.results?.forEach({(res) in
                 guard let observation = res as? VNTextObservation else {print("No observation detected.");return}
@@ -71,7 +79,13 @@ class TextDetection: NSObject {
 //                    self.controller.view.addSubview(imageView)
                 }
             })
-            self.applyFilters() // once done detecting all rectangles, filter images
+            guard let detectedAreas = self.detectedTextAreasCount else {print("Detected areas count is nil."); self.controller.goToNoText(); return}
+            if detectedAreas > 0 {
+                self.applyFilters() // once done detecting all rectangles, filter images
+            } else {
+                self.controller.goToNoText()
+            }
+            
         })
 
         let textDetectionHandler = VNImageRequestHandler(cgImage: cgImage, orientation: inputImageOrientation, options: [:])
@@ -91,11 +105,15 @@ class TextDetection: NSObject {
         guard let ciImage = CIImage(image: self.inputImage) else {print("Unable to convert to CIImage."); return} // convert to CIImage in order to enable easy image filters
         // maybe I need to properly rotate the generated CIImage to the corresponding UIImage's orientation
         // doing this the hardcoded way for the device in portrait mode. Add an extension to CIImage in order to rotate according to corresponding UIImageOrientation.
+        
+        // apply rotation
         let rotationTransform = CGAffineTransform.init(rotationAngle: CGFloat(3*Double.pi/2)) //rotation by 90 degrees
         guard let rotationFilter = CIFilter(name: "CIAffineTransform") else {print("unable to create filter");return}
         rotationFilter.setValue(ciImage, forKey: "inputImage")
         rotationFilter.setValue(rotationTransform, forKey: "inputTransform")
         guard let ciImageRotated = rotationFilter.outputImage else {print("Unable to apply rotation.");return}
+        
+        // apply translation
         let translationTransform = CGAffineTransform.init(translationX: 0, y: ciImageRotated.extent.height)
         guard let translationFilter = CIFilter(name: "CIAffineTransform") else {print("Unable to create translation filter."); return}
         translationFilter.setValue(ciImageRotated, forKey: "inputImage")
@@ -103,6 +121,15 @@ class TextDetection: NSObject {
         guard let ciImageFixed = translationFilter.outputImage else {print("Unable to translate image."); return}
         print("Processing input: ", self.inputImage)
         print("Processing CIImage: \(ciImageFixed.extent.width) width x \(ciImageFixed.extent.height) heigth.")
+        
+        // apply color controls
+//        guard let colorCorrectionFilter = CIFilter(name: "CIColorControls",
+//                                                   withInputParameters: ["inputImage":ciImageFixed,
+//                                                                         "inputSaturation":0,
+//                                                                         "inputContrast":32]) else {print("Unable to create color correction filter."); return}
+//        guard let ciImageColorCorrection = colorCorrectionFilter.outputImage else {print("Unable to apply color correciton");return}
+        
+        // Apply crop
         for rectangle in self.cropAreas{
             print("Normalized rectangle: \(rectangle)")
             let cropRectangle = CGRect(x: rectangle.origin.x * ciImageFixed.extent.width,
@@ -110,9 +137,11 @@ class TextDetection: NSObject {
                                        width: rectangle.width * ciImageFixed.extent.width,
                                        height: rectangle.height * ciImageFixed.extent.height)
             print("Crop rectangle: \(cropRectangle)")
-            guard let cropFilter = CIFilter(name: "CICrop") else {print("Unable to create filter."); continue}// creates a crop filter to apply on text region
-            cropFilter.setValue(ciImageFixed, forKey: "inputImage") // loads image content to filter
-            cropFilter.setValue(cropRectangle, forKey: "inputRectangle") // defines crop area
+            guard let cropFilter = CIFilter(name: "CICrop", withInputParameters: ["inputImage":ciImageFixed,
+                                                                                  "inputRectangle":cropRectangle])
+                else {print("Unable to create filter."); continue}// creates a crop filter to apply on text region
+//            cropFilter.setValue(ciImageFixed, forKey: "inputImage") // loads image content to filter
+//            cropFilter.setValue(cropRectangle, forKey: "inputRectangle") // defines crop area
             guard let croppedImage = cropFilter.outputImage else {print("Unable to create image from filter."); continue}
             guard let cgImage = context.createCGImage(croppedImage, from: croppedImage.extent) else {print("Unable to create CGImage from filter."); continue}
             let uiImage = UIImage(cgImage: cgImage)
