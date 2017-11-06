@@ -90,12 +90,10 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func goToLiveView(){
         DispatchQueue.main.async {
             self.appState = .liveView // update app state
-            print("Live view state reached.")
+            print("App State: live view.")
             
             // update user with the state of the app via voice over
-            guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-            voiceOver.add(self.stateSpeech[AppState.liveView]!)
-            voiceOver.execute()
+            self.sayThis(self.stateSpeech[AppState.liveView]!)
             
             if let camera = self.camera { // unwrap optional camera variable
                 camera.startLiveView()
@@ -104,18 +102,17 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     func goToCapturing(){
         self.appState = .capturing
-        print("Reached capturing state.")
+        print("App state: capturing")
         self.camera.snapPhoto()
         
     }
     func goToTextDetection(){
         self.camera.stopLiveView() // cut video feed
         self.appState = .textDetection
+        print("App state: text detection.")
         
         // update user with the state of the app via voice over
-        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-        voiceOver.add(stateSpeech[AppState.processing]!)
-        voiceOver.execute()
+        self.sayThis(self.stateSpeech[AppState.processing]!)
 
         if let image = self.camera.lastPhoto { // if the camera image is available
             self.displayImageOnView(image, xPos: 0, yPos: 0) // display image on the UI
@@ -140,28 +137,28 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func goToReading(_ string: String){
         self.appState = .reading
-        print("Reading state reached.")
-        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-        voiceOver.add(string)
-        voiceOver.execute()
+        print("App state: reading")
+        self.sayThis(string)
     }
     
     func goToNoText(){
         self.appState = .noText
-        print("No text state reached.")
-        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-        voiceOver.add(stateSpeech[AppState.noText]!)
-        voiceOver.execute()
+        print("App state: no text")
+        self.sayThis(self.stateSpeech[AppState.noText]!)
         self.goToCleanup()
     }
     
     func goToCleanup(){
         // Does the clean up of internal variables to make them ready for any new requests.
-        self.appState = .cleanup
-        print("Cleanup state reached.")
+        print("App state: cleanup")
         if let voiceOver = self.voiceOver {voiceOver.reset()}
         if let ocr = self.ocr {ocr.reset()}
         if let textDetection = self.textDetection {textDetection.reset()}
+        
+        if self.appState == .cancelling{ //if the request of cleanup came from cancelling
+            self.sayThis(self.stateSpeech[AppState.cancelling]!)
+        }
+        self.appState = .cleanup
         
         // Remove previous content from main view before starting live view
         DispatchQueue.main.async { // dispatch to main queue as it is UI related.
@@ -176,10 +173,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func goToCancel(){
         self.appState = .cancelling
-        print("Cancel request received.")
-        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
-        voiceOver.add(stateSpeech[AppState.cancelling]!)
-        voiceOver.execute()
+        print("App state: cancel")
         self.goToCleanup()
     }
 
@@ -201,6 +195,12 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             print("Adding new subview with image.")
             self.view.addSubview(imageView) // this will be removed from the view when we return to live view mode.
         }
+    }
+    
+    func sayThis(_ string: String){
+        guard let voiceOver = self.voiceOver else {fatalError("Unable to unwrap voice over.")}
+        voiceOver.add(string)
+        voiceOver.execute()
     }
     
     

@@ -50,10 +50,10 @@ class TesseractOCR: NSObject, G8TesseractDelegate {
     
     func reset(){ // cancels all OCR requests that may be in progress. This should be called before establishing a liveView feed.
         print("Cancelling pending OCR requests.")
-        let cancelOCRRequestsInProgress = self.shouldCancelImageRecognition(for: self.tesseract) // cancel any requests.
-        if cancelOCRRequestsInProgress {
-            print("OCR requests were probably cancelled. Test.")}
-        else {print("Looks like you still have to cancel OCR requests.")}
+        let _ = self.shouldCancelImageRecognition(for: self.tesseract) // cancel any requests.
+//        if cancelOCRRequestsInProgress {
+//            print("OCR requests were probably cancelled. Test.")}
+//        else {print("Looks like you still have to cancel OCR requests.")}
     }
     
     func shouldCancelImageRecognition(for tesseract: G8Tesseract!) -> Bool {

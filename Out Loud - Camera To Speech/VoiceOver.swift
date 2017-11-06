@@ -82,7 +82,6 @@ class VoiceOver: NSObject, AVSpeechSynthesizerDelegate {
                     self.controller.goToCleanup() // run cleanup routine before starting live view again.
                 } // if OCR is not done processing, its last process will call the execute routine here and program will resume. No deadlock here (hopefully).
             } // else case: speech has finished for another state call
-            
         }
     }
 }
