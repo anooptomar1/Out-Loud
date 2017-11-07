@@ -151,14 +151,15 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func goToCleanup(){
         // Does the clean up of internal variables to make them ready for any new requests.
         print("App state: cleanup")
+        self.appState = .cleanup
         if let voiceOver = self.voiceOver {voiceOver.reset()}
         if let ocr = self.ocr {ocr.reset()}
         if let textDetection = self.textDetection {textDetection.reset()}
         
-        if self.appState == .cancelling{ //if the request of cleanup came from cancelling
-            self.sayThis(self.stateSpeech[AppState.cancelling]!)
-        }
-        self.appState = .cleanup
+//        if self.appState == .cancelling{ //if the request of cleanup came from cancelling
+//            self.sayThis(self.stateSpeech[AppState.cancelling]!)
+//        }
+        
         
         // Remove previous content from main view before starting live view
         DispatchQueue.main.async { // dispatch to main queue as it is UI related.

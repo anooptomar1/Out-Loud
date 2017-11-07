@@ -13,11 +13,13 @@ class TesseractOCR: NSObject, G8TesseractDelegate {
     let controller: ViewController
     var finishedOCRRequests: Int // number of requests that have already been processed.
     var tesseract: G8Tesseract
+    var cancelRequests: Bool // boolean in global scope to control cancellation of pending OCR requests
     
     init(viewController: ViewController){
         self.controller = viewController
         self.finishedOCRRequests = 0
         self.tesseract = G8Tesseract(language: "eng")
+        self.cancelRequests = false
         super.init()
         self.tesseract.delegate = self // grant delegate authority to self
     }
@@ -50,15 +52,21 @@ class TesseractOCR: NSObject, G8TesseractDelegate {
     
     func reset(){ // cancels all OCR requests that may be in progress. This should be called before establishing a liveView feed.
         print("Cancelling pending OCR requests.")
-        let _ = self.shouldCancelImageRecognition(for: self.tesseract) // cancel any requests.
-//        if cancelOCRRequestsInProgress {
-//            print("OCR requests were probably cancelled. Test.")}
-//        else {print("Looks like you still have to cancel OCR requests.")}
+        self.cancelRequests = true
+        let cancelOCRRequestsInProgress = self.shouldCancelImageRecognition(for: self.tesseract) // cancel any requests.
+        if cancelOCRRequestsInProgress {
+            print("OCR requests were probably cancelled. Test.")}
+        else {print("Looks like you still have to cancel OCR requests.")}
+        self.finishedOCRRequests = 0 // reset the finished requests counter
     }
     
     func shouldCancelImageRecognition(for tesseract: G8Tesseract!) -> Bool {
         // called periodically to check if user wants to cancel recognition
-        return false
+        // Setting this to return true caused OCR to no longer work, so it is likely called even if you don't trigger it.
+       if self.cancelRequests {
+            self.cancelRequests = false
+            return true
+        } else {return false}
     }
     
 }
