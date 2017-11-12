@@ -69,14 +69,6 @@ class TextDetection: NSObject {
                     redBox.frame = textRectangle
                     self.controller.view.addSubview(redBox)
                     
-//                    let croppedImage = ciImage.cropped(to: boundingBox) // crop original image according to detected bounding box.
-//                    let croppedUIImage = UIImage(ciImage: croppedImage) // convert to UIImage
-//                    self.textImages.append(croppedUIImage) // add to output storage
-//                    let imageView = UIImageView(image: croppedUIImage)
-//                    let conversionRatioCropped = self.controller.view.frame.width / croppedUIImage.size.width
-//                    let scaledHeightCropped = conversionRatioCropped * croppedUIImage.size.height
-//                    imageView.frame = CGRect(x: 0, y: 0, width: self.controller.view.frame.width, height: scaledHeightCropped)
-//                    self.controller.view.addSubview(imageView)
                 }
             })
             guard let detectedAreas = self.detectedTextAreasCount else {print("Detected areas count is nil."); self.controller.goToNoText(); return}
@@ -101,6 +93,12 @@ class TextDetection: NSObject {
     
     private func applyFilters(){
         print("\(cropAreas.count) text areas detected.")
+        
+        
+        
+        // consider calling the rectangles sorting routine here.
+        let sortedCropAreas = sortDetectedAreas(cropAreas)
+        
         let context = CIContext(options: nil) // context of the CIImage; CIImages cannot be drawn in the UI without this o.O
         guard let ciImage = CIImage(image: self.inputImage) else {print("Unable to convert to CIImage."); return} // convert to CIImage in order to enable easy image filters
         // maybe I need to properly rotate the generated CIImage to the corresponding UIImage's orientation
@@ -130,7 +128,7 @@ class TextDetection: NSObject {
 //        guard let ciImageColorCorrection = colorCorrectionFilter.outputImage else {print("Unable to apply color correciton");return}
         
         // Apply crop
-        for rectangle in self.cropAreas{
+        for rectangle in sortedCropAreas{
             print("Normalized rectangle: \(rectangle)")
             let cropRectangle = CGRect(x: rectangle.origin.x * ciImageFixed.extent.width,
                                        y: rectangle.origin.y * ciImageFixed.extent.height,
@@ -150,6 +148,46 @@ class TextDetection: NSObject {
         }
         print("Done filtering.")
         self.controller.goToApplyOCR()
+    }
+    
+    private func sortDetectedAreas(_ rectanglesToSort: [CGRect]) -> [CGRect]{
+        // sorts reading areas according to their position so that they are read in a manner that makes sense.
+        // input: an array of unsorted CGRect;
+        // output: the same array sorted from top to bottom, left to right.
+        var unsortedRectangles = rectanglesToSort // creates a copy of the rectangle to be sorted. I need this line because rectanglesToSort is an immutable 'let' constant.
         
+        var sortedRectangles: [CGRect] = [unsortedRectangles.removeFirst()] // initializes sorted array containing the first element of the unsorted rectangles.
+        let verticalTolerance: CGFloat = 0.05 // Vertical pixel tolerance to consider items within the same vertical line coordinate. This value can assume any values from 0.0 to 1.0 and relates to percentage.
+        
+        for rectangleToCheck in unsortedRectangles{ // loads unsorted rectangle to check. Remember the first element is already present in the sorted version of the array
+            let sortedCount = sortedRectangles.count // updates the element count in the sorted array
+            for rectangleAlreadySorted in sortedRectangles { // load the elemnts in the already sorted rectangles list to be checked against
+                let yRectangleToCheck = rectangleToCheck.origin.y // remember this y value is normalized to the image's dimensions varying from 0.0 to 1.0
+                let yRectangleAlreadySorted = rectangleAlreadySorted.origin.y // same statement as the above is valid.
+                let verticalDifference = abs(yRectangleToCheck - yRectangleAlreadySorted) // normalized difference between the 2 rectangles. [0.0,1.0]
+                if verticalDifference <= verticalTolerance { // consider these 2 rectangles to be in the same vertical postition
+                    // compare x coordinates
+                    let xRectangleToCheck = rectangleToCheck.origin.x
+                    let xRectangleAlreadySorted = rectangleAlreadySorted.origin.x
+                    // assuming 2 rectangles cannot be detected within the same vertical postion and have the same x coordinate (even with a tolerance).
+                    if xRectangleToCheck > xRectangleAlreadySorted { // new rectangle is located to the right of the existing in the sorted array.
+                        guard let sortedRectangleIndex = sortedRectangles.index(of: rectangleAlreadySorted) else {fatalError("Could not retrieve index of sorted rectangle.")} // returns the index of the sorted rectangle in the current analysis
+                        sortedRectangles.insert(rectangleToCheck, at: sortedRectangleIndex) // places the rectangle in this check in the place of the already sorted rectangle.
+                        break // break the sorted rectangles loop since the sorted array will only have bigger elements on next iterations.
+                    }
+                }
+                else { // rectangles have different vertical positions
+                    if yRectangleToCheck > yRectangleAlreadySorted { // new rectangle is above the existing one in the sorted array, so it must be added at the index of the sorted one.
+                        guard let sortedRectangleIndex = sortedRectangles.index(of: rectangleAlreadySorted) else {fatalError("Could not retrieve index of sorted rectangle.")} // returns the index of the sorted rectangle in the current analysis
+                        sortedRectangles.insert(rectangleToCheck, at: sortedRectangleIndex) // places the rectangle in this check in the place of the already sorted rectangle.
+                        break
+                    }
+                } // if the other option, rectangle below, do nothing until we have reached the end of the sorted array;
+            }
+            if sortedCount == sortedRectangles.count { // we have reached the end of the sorted array and found nothing bigger
+                sortedRectangles.append(rectangleToCheck)
+            }
+        }
+        return sortedRectangles
     }
 }

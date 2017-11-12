@@ -22,6 +22,7 @@ class TesseractOCR: NSObject, G8TesseractDelegate {
         self.cancelRequests = false
         super.init()
         self.tesseract.delegate = self // grant delegate authority to self
+        self.tesseract.charWhitelist = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUWXYZ$,.:!@%"
     }
     
     func execute(_ images: [UIImage]){  
