@@ -79,6 +79,7 @@ class TextDetection: NSObject {
             }
             
         })
+        
 
         let textDetectionHandler = VNImageRequestHandler(cgImage: cgImage, orientation: inputImageOrientation, options: [:])
         
@@ -97,7 +98,8 @@ class TextDetection: NSObject {
         
         
         // consider calling the rectangles sorting routine here.
-        let sortedCropAreas = sortDetectedAreas(cropAreas)
+        //let sortedCropAreas = sortDetectedAreas(cropAreas)
+        let sortedCropAreas = cropAreas
         
         let context = CIContext(options: nil) // context of the CIImage; CIImages cannot be drawn in the UI without this o.O
         guard let ciImage = CIImage(image: self.inputImage) else {print("Unable to convert to CIImage."); return} // convert to CIImage in order to enable easy image filters

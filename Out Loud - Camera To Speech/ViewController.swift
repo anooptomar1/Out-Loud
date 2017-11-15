@@ -11,7 +11,7 @@ import AVFoundation
 import TesseractOCR
 
 enum AppState{
-    case loading, liveView, capturing, textDetection, processing, reading, noText, cancelling, cleanup
+    case loading, liveView, capturing, textDetection, processing, reading, noText, cleanup, background
     /*
      loading: app is loading for the first time
      liveView: app is presenting the live view from the camera and awaiting a tap to capture image
@@ -32,8 +32,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     private var stateSpeech: [AppState:String] = [AppState.liveView:"Camera view. Tap to begin.",
                                                   AppState.processing:"Processing.",
-                                                  AppState.noText:"No text found.",
-                                                  AppState.cancelling:"Cancelled."] // this dictionary contains audio feedback phrases for app state changes.
+                                                  AppState.noText:"No text found."] // this dictionary contains audio feedback phrases for app state changes.
     var appState = AppState.loading
     var voiceOver: VoiceOver!
     var camera: Camera!
@@ -59,7 +58,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         tap.numberOfTapsRequired = 1
 
         // ADITIONAL ACTIONS
-        self.goToLiveView() // start live view just after view is loaded.
+        // self.goToLiveView() // start live view just after view is loaded.; no longer required. performed at AppDelegate
     }
 
     
@@ -72,8 +71,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             case .liveView:
                 self.goToCapturing()
                 break;
-            case .processing, .reading, .textDetection:
-                self.goToCancel()
+            case .processing, .reading:
+                self.goToCleanup()
                 break
             default:
                 print("Tap functions disabled at this time.")
@@ -90,7 +89,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     func goToLiveView(){
         DispatchQueue.main.async {
             self.appState = .liveView // update app state
-            print("App State: live view.")
+            print("### App State: live view.")
             
             // update user with the state of the app via voice over
             self.sayThis(self.stateSpeech[AppState.liveView]!)
@@ -102,14 +101,14 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     func goToCapturing(){
         self.appState = .capturing
-        print("App state: capturing")
+        print("### App state: capturing")
         self.camera.snapPhoto()
         
     }
     func goToTextDetection(){
         self.camera.stopLiveView() // cut video feed
-        self.appState = .textDetection
-        print("App state: text detection.")
+        self.appState = .processing
+        print("### App state: text detection.")
         
         // update user with the state of the app via voice over
         self.sayThis(self.stateSpeech[AppState.processing]!)
@@ -137,29 +136,27 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     func goToReading(_ string: String){
         self.appState = .reading
-        print("App state: reading")
+        print("### App state: reading")
         self.sayThis(string)
     }
     
     func goToNoText(){
         self.appState = .noText
-        print("App state: no text")
+        print("### App state: no text")
         self.sayThis(self.stateSpeech[AppState.noText]!)
         self.goToCleanup()
     }
     
     func goToCleanup(){
         // Does the clean up of internal variables to make them ready for any new requests.
-        print("App state: cleanup")
+        
+        let returnToLiveView = self.appState != .background // if this cleanup call was initiated by App Delegate, then the state will have been updated to background before this call. In that case, do not execute live view, for it will run on DidBecomeActive.
         self.appState = .cleanup
+        print("### App state: cleanup")
+        
         if let voiceOver = self.voiceOver {voiceOver.reset()}
         if let ocr = self.ocr {ocr.reset()}
         if let textDetection = self.textDetection {textDetection.reset()}
-        
-//        if self.appState == .cancelling{ //if the request of cleanup came from cancelling
-//            self.sayThis(self.stateSpeech[AppState.cancelling]!)
-//        }
-        
         
         // Remove previous content from main view before starting live view
         DispatchQueue.main.async { // dispatch to main queue as it is UI related.
@@ -169,14 +166,11 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
             }
         }
         
-        self.goToLiveView()
+        if returnToLiveView { // return to live view or stay put.
+            self.goToLiveView()
+        }
     }
     
-    func goToCancel(){
-        self.appState = .cancelling
-        print("App state: cancel")
-        self.goToCleanup()
-    }
 
     
     
