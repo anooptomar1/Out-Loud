@@ -71,17 +71,34 @@ class VoiceOver: NSObject, AVSpeechSynthesizerDelegate {
     
     // delegate method
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        // Remember: this delegate method is called not only after OCR requests, but also on regular state calls to give the user feedback on what the app is currently doing.
         if self.queue.count > 0 { // finished uttering sentence and found elements in the queue to read.
             self.execute() // call utterance routine again
-        } else { // queue is empty
-            // This delegate method is called not only after OCR requests, but also on regular state calls.
-            if self.controller.appState == AppState.reading {
+        } else { // queue is empty. there is nothing left to say
+            switch self.controller.appState {
+            case .processing: // app has just finished uttering the processing state feedback
+                if let image = self.controller.camera.lastPhoto { // if the camera image is available
+                    self.controller.runTextDetection(image: image)
+                } else { // no image is available for processing
+                    self.controller.goToNoText()
+                }
+                break
+            case .liveView:
+                print("Finished uttering live view state. Standing by for user tap.")
+                break
+            case .reading: // app has finished reading a sentence from the OCR identification process.
                 guard let ocr = self.controller.ocr else {print("VoiceOver: Error on OCR callback from ViewController.");return}
                 guard let textDetection = self.controller.textDetection else {print("VoiceOver: Error on textDetection callback from ViewController.");return}
-                if ocr.finishedOCRRequests == textDetection.detectedTextAreasCount{ // OCR has already processed all the requests of detected text areas.
+                if ocr.finishedOCRRequests == textDetection.detectedTextAreasCount{ // All OCR requests have been completed and have now been uttered.
                     self.controller.goToCleanup() // run cleanup routine before starting live view again.
-                } // if OCR is not done processing, its last process will call the execute routine here and program will resume. No deadlock here (hopefully).
-            } // else case: speech has finished for another state call
+                } // else case: OCR is not done processing and will resume execution flow when it does.
+                break
+            case .noText: // Finished uttering the no text found sentence.
+                self.controller.goToCleanup()
+                break
+            default: // no action required from the state the app was called on
+                break
+            }
         }
     }
 }

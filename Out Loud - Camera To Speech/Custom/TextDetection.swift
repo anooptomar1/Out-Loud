@@ -94,12 +94,7 @@ class TextDetection: NSObject {
     
     private func applyFilters(){
         print("\(cropAreas.count) text areas detected.")
-        
-        
-        
         // consider calling the rectangles sorting routine here.
-        //let sortedCropAreas = sortDetectedAreas(cropAreas)
-        let sortedCropAreas = cropAreas
         
         let context = CIContext(options: nil) // context of the CIImage; CIImages cannot be drawn in the UI without this o.O
         guard let ciImage = CIImage(image: self.inputImage) else {print("Unable to convert to CIImage."); return} // convert to CIImage in order to enable easy image filters
@@ -130,7 +125,7 @@ class TextDetection: NSObject {
 //        guard let ciImageColorCorrection = colorCorrectionFilter.outputImage else {print("Unable to apply color correciton");return}
         
         // Apply crop
-        for rectangle in sortedCropAreas{
+        for rectangle in cropAreas{
             print("Normalized rectangle: \(rectangle)")
             let cropRectangle = CGRect(x: rectangle.origin.x * ciImageFixed.extent.width,
                                        y: rectangle.origin.y * ciImageFixed.extent.height,
@@ -153,6 +148,7 @@ class TextDetection: NSObject {
     }
     
     private func sortDetectedAreas(_ rectanglesToSort: [CGRect]) -> [CGRect]{
+        // consider replacing this rule based system for a machine learning one.
         // sorts reading areas according to their position so that they are read in a manner that makes sense.
         // input: an array of unsorted CGRect;
         // output: the same array sorted from top to bottom, left to right.

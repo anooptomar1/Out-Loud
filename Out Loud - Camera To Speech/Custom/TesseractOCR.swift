@@ -32,20 +32,17 @@ class TesseractOCR: NSObject, G8TesseractDelegate {
             for image in images{ // iterate thru the list of images
                 self.tesseract.image = image // loads image for recognition
                 self.tesseract.recognize() // run recognition algorithm
-
                 // routine is not resumed until tesseract is done processing. It's ok since it runs outside the main queue.
                 self.finishedOCRRequests += 1 // increments finished requests counter
-                print("Done processing. Here's what I got:")
-
                 if let recognizedText = self.tesseract.recognizedText { // OCR found text on the image
-                    print(recognizedText)
-                    self.controller.goToReading(recognizedText) // feed recognized text to reading routine
+                    print("Text identified: ", recognizedText)
+                    self.controller.analyzer.add(recognizedText) // adds text to document analyzer
                 } else { // this piece of detected text rectangle has no text that was recognized
                     print("No text recognized.") // assumes Tesseract returns nil when processing an image with no text.
-                    guard let detectedTextAreasCount = self.controller.textDetection.detectedTextAreasCount else {print("Detected text areas is nil. Something went wrong.");return}
-                    if self.finishedOCRRequests == detectedTextAreasCount { // Have all detected text rectangles been processed?
-                        self.controller.goToCleanup()
-                    }
+                }
+                guard let detectedTextAreasCount = self.controller.textDetection.detectedTextAreasCount else {print("Detected text areas is nil. Something went wrong.");return}
+                if self.finishedOCRRequests == detectedTextAreasCount { // Have all detected text rectangles been processed?
+                    self.controller.analyzer.execute() // runs document analysis on all detected texts groups.
                 }
             }
         }

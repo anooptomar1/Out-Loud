@@ -11,7 +11,7 @@ import AVFoundation
 import TesseractOCR
 
 enum AppState{
-    case loading, liveView, capturing, textDetection, processing, reading, noText, cleanup, background
+    case loading, liveView, capturing, processing, reading, noText, background
     /*
      loading: app is loading for the first time
      liveView: app is presenting the live view from the camera and awaiting a tap to capture image
@@ -39,6 +39,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     var capturedCGImage: CGImage! // placeholder for captured image
     var textDetection: TextDetection!
     var ocr: TesseractOCR!
+    var analyzer: DocumentLayoutAnalysis!
     
     let scaleFactor: CGFloat = UIScreen.main.scale // device dependent scale factor; 3x for the iPhone 7 Plus. Used in the context of CIImages
     
@@ -49,6 +50,7 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         voiceOver = VoiceOver(viewController: self) // initializes voice over object for this view controller
         camera = Camera(viewController: self) // initializes camera object for this view controller
         ocr = TesseractOCR(viewController: self) // initialize OCR class.
+        analyzer = DocumentLayoutAnalysis(viewController: self) // initialize class that handles docuemnt analysis.
         
         // SETUP CODED GESTURES
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap)) // instantiates a gesture recognizer
@@ -86,45 +88,52 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     // APP STATES
-    func goToLiveView(){
-        DispatchQueue.main.async {
-            self.appState = .liveView // update app state
-            print("### App State: live view.")
-            
-            // update user with the state of the app via voice over
-            self.sayThis(self.stateSpeech[AppState.liveView]!)
-            
-            if let camera = self.camera { // unwrap optional camera variable
-                camera.startLiveView()
-            } else {fatalError("Unable to unwrap camera object.")}
+    
+    func goToCleanup(){
+        // Does the clean up of internal variables to make them ready for any new requests.
+        
+        print("### Cleanup initiated.")
+        
+        if let voiceOver = self.voiceOver {voiceOver.reset()}
+        if let ocr = self.ocr {ocr.reset()}
+        if let textDetection = self.textDetection {textDetection.reset()}
+        if let analyzer = self.analyzer {analyzer.reset()}
+        
+        // Remove previous content from main view before starting live view
+        DispatchQueue.main.async { // dispatch to main queue as it is UI related.
+            print("Removing previous subviews on top of main view")
+            for subview in self.view.subviews{
+                subview.removeFromSuperview()
+            }
+        }
+        
+        if self.appState != .background { // if this cleanup call was initiated by App Delegate, then the state will have been updated to background before this call. In that case, do not execute live view, for it will run on DidBecomeActive.
+            self.goToLiveView()
         }
     }
+    
+    func goToLiveView(){
+        DispatchQueue.main.async { // making sure it runs on the main queue. User functions may be momentarially paused.
+            self.appState = .liveView // update app state
+            print("### App State: live view.")
+            if let camera = self.camera { // unwrap optional camera variable
+                camera.startLiveView() // starts live feed
+                self.sayThis(self.stateSpeech[AppState.liveView]!) // update user with the state of the app via voice over
+            } else {fatalError("Unable to unwrap camera object.")} // something went wrong in initialization
+        }
+    }
+    
     func goToCapturing(){
         self.appState = .capturing
         print("### App state: capturing")
         self.camera.snapPhoto()
-        
     }
+    
     func goToTextDetection(){
         self.camera.stopLiveView() // cut video feed
         self.appState = .processing
         print("### App state: text detection.")
-        
-        // update user with the state of the app via voice over
-        self.sayThis(self.stateSpeech[AppState.processing]!)
-
-        if let image = self.camera.lastPhoto { // if the camera image is available
-            self.displayImageOnView(image, xPos: 0, yPos: 0) // display image on the UI
-
-            // Apply text detection
-            self.textDetection = TextDetection(viewController: self, inputImage: image)
-            if let textDetection = self.textDetection {
-                textDetection.detectTextAreas()
-            }
-            // next state is triggered when text detection has finished.
-        } else { // no image is available for processing
-            self.goToNoText()
-        }
+        self.sayThis(self.stateSpeech[AppState.processing]!) // update user with the state of the app via voice over
     }
     
     func goToApplyOCR(){
@@ -144,32 +153,9 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         self.appState = .noText
         print("### App state: no text")
         self.sayThis(self.stateSpeech[AppState.noText]!)
-        self.goToCleanup()
     }
     
-    func goToCleanup(){
-        // Does the clean up of internal variables to make them ready for any new requests.
-        
-        let returnToLiveView = self.appState != .background // if this cleanup call was initiated by App Delegate, then the state will have been updated to background before this call. In that case, do not execute live view, for it will run on DidBecomeActive.
-        self.appState = .cleanup
-        print("### App state: cleanup")
-        
-        if let voiceOver = self.voiceOver {voiceOver.reset()}
-        if let ocr = self.ocr {ocr.reset()}
-        if let textDetection = self.textDetection {textDetection.reset()}
-        
-        // Remove previous content from main view before starting live view
-        DispatchQueue.main.async { // dispatch to main queue as it is UI related.
-            print("Removing previous subviews on top of main view")
-            for subview in self.view.subviews{
-                subview.removeFromSuperview()
-            }
-        }
-        
-        if returnToLiveView { // return to live view or stay put.
-            self.goToLiveView()
-        }
-    }
+    
     
 
     
@@ -198,9 +184,13 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
         voiceOver.execute()
     }
     
-    
-//    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-//        // handles transitioning of device orientation.
-//    }
+    func runTextDetection(image: UIImage){
+        self.displayImageOnView(image, xPos: 0, yPos: 0) // display image on the UI
+        // Apply text detection
+        self.textDetection = TextDetection(viewController: self, inputImage: image)
+        if let textDetection = self.textDetection {
+            textDetection.detectTextAreas()
+        } // next state is triggered when text detection has finished.
+    }
 }
 
